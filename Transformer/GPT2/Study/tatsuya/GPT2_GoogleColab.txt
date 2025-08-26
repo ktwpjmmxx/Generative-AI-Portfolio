@@ -126,6 +126,53 @@ for msg in self.conversation_history[-5:]:
 
 ・会話履歴の直近5ターン分を文字列にまとめる。
 
+◆ConversationManagerの動きの例
+
+・会話履歴は空リスト []
+・上限は3ターンまで。
+
+1.初期化
+cm = ConversationManager(max_history=3)
+
+2.メッセージ追加
+cm.add_message("user", "こんにちは")
+
+履歴➡[
+  {"role": "user", "message": "こんにちは", "timestamp": ...}
+]
+
+
+3.次にボットの発言を追加
+cm.add_message("bot", "やあ！元気？")
+
+
+履歴➡[
+  {"role": "user", "message": "こんにちは", "timestamp": ...},
+  {"role": "bot", "message": "やあ！元気？", "timestamp": ...}
+]
+
+cm.add_message("user", "今日はカレーを作ろうと思う")
+
+[
+  {"role": "user", "message": "こんにちは", ...},
+  {"role": "bot", "message": "やあ！元気？", ...},
+  {"role": "user", "message": "今日はカレーを作ろうと思う", ...}
+]
+
+4.コンテキスト生成
+
+GPT-2 に渡す文字列を作る
+
+print(cm.get_context())
+
+出力される文字列↓
+
+user: こんにちは
+bot: やあ！元気？
+user: 今日はカレーを作ろうと思う
+
+
+
 
 
 
