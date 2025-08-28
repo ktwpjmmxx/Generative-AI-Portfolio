@@ -172,8 +172,33 @@ bot: やあ！元気？
 user: 今日はカレーを作ろうと思う
 
 
+【コード】
+
+def create_chat_prompt(persona, conversation_history, user_input):
+    """高品質な応答を生成するためのプロンプト構築"""
+    
+    base_template = """あなたは{persona}です。以下の会話履歴を参考に、自然で一貫性のある応答をしてください。
+
+会話履歴:
+{history}
+
+ユーザー: {user_input}
+アシスタント:"""
+    
+    # 履歴の整形
+    history_text = ""
+    for msg in conversation_history[-4:]:  # 直近4回
+        role = "ユーザー" if msg['role'] == 'user' else "アシスタント"
+        history_text += f"{role}: {msg['message']}\n"
+    
+    return base_template.format(
+        persona=persona,
+        history=history_text,
+        user_input=user_input
+    )
 
 
+【概要】
 
 
 
