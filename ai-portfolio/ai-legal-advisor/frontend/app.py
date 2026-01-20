@@ -1,116 +1,362 @@
 """
-AI Legal Advisor - Streamlit Frontend Application
-個人情報・消費者保護特化型 IT法務チェッカー
+AI Legal Advisor - Professional Frontend Application
+Enterprise-grade IT Legal Risk Assessment Platform
 """
 
 import streamlit as st
 from input_filter import InputFilter
-import json
 from datetime import datetime
 
 # ページ設定
 st.set_page_config(
-    page_title="AI Legal Advisor",
-    page_icon="🏛️",
+    page_title="AI Legal Advisor - IT Legal Risk Assessment",
+    page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# カスタムCSS
+# プロフェッショナルなカスタムCSS
 st.markdown("""
     <style>
+    /* グローバルフォント */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    /* ヘッダー */
     .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
-        text-align: center;
-        margin-bottom: 1rem;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
     }
+    
     .sub-header {
-        font-size: 1.2rem;
-        color: #666;
-        text-align: center;
-        margin-bottom: 2rem;
+        font-size: 1rem;
+        color: #6b7280;
+        margin-bottom: 2.5rem;
+        font-weight: 400;
     }
+    
+    /* リスクレベルカード */
+    .risk-card {
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border: 1px solid #e5e7eb;
+    }
+    
     .risk-high {
-        background-color: #ffebee;
-        border-left: 5px solid #f44336;
-        padding: 1rem;
-        border-radius: 5px;
+        background-color: #fef2f2;
+        border-left: 4px solid #dc2626;
     }
+    
     .risk-medium {
-        background-color: #fff3e0;
-        border-left: 5px solid #ff9800;
-        padding: 1rem;
-        border-radius: 5px;
+        background-color: #fffbeb;
+        border-left: 4px solid #f59e0b;
     }
+    
     .risk-low {
-        background-color: #e8f5e9;
-        border-left: 5px solid #4caf50;
-        padding: 1rem;
-        border-radius: 5px;
+        background-color: #f0fdf4;
+        border-left: 4px solid #10b981;
     }
+    
+    .risk-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+    
+    .risk-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 0.25rem;
+    }
+    
+    /* セクション */
+    .section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #374151;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    /* 法律バッジ */
+    .law-badge {
+        display: inline-block;
+        background-color: #f3f4f6;
+        color: #374151;
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin: 0.25rem 0.25rem 0.25rem 0;
+    }
+    
+    /* 推奨事項リスト */
+    .recommendation-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .recommendation-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* 情報ボックス */
     .info-box {
-        background-color: #e3f2fd;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
         padding: 1rem;
-        border-radius: 5px;
         margin: 1rem 0;
     }
+    
     .warning-box {
-        background-color: #fff9c4;
+        background-color: #fffbeb;
+        border: 1px solid #fde68a;
+        border-left: 4px solid #f59e0b;
+        border-radius: 8px;
         padding: 1rem;
-        border-radius: 5px;
         margin: 1rem 0;
-        border-left: 5px solid #fbc02d;
+    }
+    
+    /* ボタンスタイル調整 */
+    .stButton button {
+        border-radius: 6px;
+        font-weight: 500;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s;
+    }
+    
+    .stButton button:hover {
+        border-color: #d1d5db;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    
+    /* サイドバー */
+    [data-testid="stSidebar"] {
+        background-color: #f9fafb;
+    }
+    
+    /* フッター */
+    .footer {
+        text-align: center;
+        color: #9ca3af;
+        font-size: 0.875rem;
+        padding: 3rem 0 2rem 0;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 4rem;
+    }
+    
+    /* 入力エリア */
+    .stTextArea textarea {
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .stTextArea textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ヘッダー
-st.markdown('<div class="main-header">🏛️ AI Legal Advisor</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-header">個人情報・消費者保護特化型 IT法務チェッカー</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">AI Legal Advisor</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-header">Enterprise IT Legal Risk Assessment Platform</div>', unsafe_allow_html=True)
 
 # サイドバー
 with st.sidebar:
-    st.header("📋 対応分野")
-    st.markdown("""
-    **✅ 対応可能な領域**
-    - ✓ 個人情報保護法
-    - ✓ 消費者保護（ダークパターン等）
-    - ✓ アクセシビリティ
-    - ✓ 金融規制
-    - ✓ 契約法務
+    st.markdown("### Coverage")
     
-    **❌ 対応範囲外**
-    - ✗ OSSライセンス → 弁護士に相談
-    - ✗ AI倫理 → 専門家に相談
-    - ✗ プログラミング技術 → 技術コミュニティへ
+    st.markdown("""
+    **Supported Areas**
+    
+    • Personal Information Protection  
+    • Consumer Protection  
+    • Web Accessibility  
+    • Financial Regulations  
+    • Contract Law
     """)
     
     st.divider()
     
-    st.header("⚙️ 設定")
-    show_debug = st.checkbox("デバッグ情報を表示", value=False)
+    st.markdown("### Out of Scope")
+    
+    st.markdown("""
+    • OSS Licensing  
+    • AI Ethics  
+    • Technical Implementation
+    """)
+    
+    st.divider()
+    
+    st.markdown("### Settings")
+    show_debug = st.checkbox("Show debug information", value=False)
     
     st.divider()
     
     st.markdown("""
-    <div style='text-align: center; color: #666; font-size: 0.8rem;'>
-    <p>⚠️ 注意事項</p>
-    <p>この判定結果は参考情報です。<br>
-    最終的な法的判断は弁護士に<br>
-    ご相談ください。</p>
+    <div style='font-size: 0.75rem; color: #6b7280; line-height: 1.6;'>
+    <strong>Disclaimer</strong><br>
+    This assessment is for reference only. 
+    Please consult with legal counsel for final decisions.
     </div>
     """, unsafe_allow_html=True)
 
-# session_stateの初期化
+# 関数定義
+def generate_mock_result(input_text: str):
+    """モック結果生成"""
+    if "位置情報" in input_text or "個人情報" in input_text:
+        return {
+            "risk_level": "Medium",
+            "risk_level_ja": "中",
+            "laws": ["Personal Information Protection Act", "Telecommunications Business Act"],
+            "reason": "位置情報は個人を特定できる情報であり、収集時には目的を限定した開示が義務付けられています。また、広告配信事業者への提供は、提供先が適切な措置を講じているかの確認が必要です。",
+            "recommendations": [
+                "プライバシーポリシーに位置情報の収集目的を明記してください。",
+                "提供先との間で個人情報の第三者提供に関する契約（NDA）を締結してください。",
+                "ユーザーに対してオプトアウト機会を提供してください。"
+            ],
+            "inference_time": 15.2,
+        }
+    elif "解約" in input_text or "ダークパターン" in input_text:
+        return {
+            "risk_level": "High",
+            "risk_level_ja": "高",
+            "laws": ["Specified Commercial Transactions Act", "Consumer Contract Act"],
+            "reason": "解約を不当に困難にするUI（ダークパターン）が見られ、不当な顧客囲い込みとみなされるリスクがあります。",
+            "recommendations": [
+                "解約ボタンは視認性の高い位置に配置してください。",
+                "解約を選択したユーザーには適切なサポートを提供してください。",
+                "警告メッセージは1回までに制限することを推奨します。"
+            ],
+            "inference_time": 12.8,
+        }
+    elif "アクセシビリティ" in input_text or "代替テキスト" in input_text or "画像" in input_text:
+        return {
+            "risk_level": "Medium",
+            "risk_level_ja": "中",
+            "laws": ["Act on Elimination of Discrimination against Persons with Disabilities"],
+            "reason": "スクリーンリーダーで画像の内容が読み上げられないことは、情報伝達における不備として認定される可能性があります。",
+            "recommendations": [
+                "画像ボタンにはテキストバッジを設置してください。",
+                "代替テキスト（alt属性）を必ず記載してください。",
+                "JIS X 8341-3に準拠した実装を行ってください。"
+            ],
+            "inference_time": 14.5,
+        }
+    else:
+        return {
+            "risk_level": "Medium",
+            "risk_level_ja": "中",
+            "laws": ["Under Review"],
+            "reason": "入力内容に基づいて法的リスクを分析しています。より詳細な情報があれば、精度が向上します。",
+            "recommendations": [
+                "具体的な仕様を追加してください。",
+                "ユーザーデータの取り扱いについて明記してください。",
+                "法務担当者に確認することを推奨します。"
+            ],
+            "inference_time": 10.0,
+        }
+
+def display_result(result: dict, show_debug: bool = False):
+    """結果表示"""
+    risk_level = result["risk_level"]
+    
+    # リスクレベルカード
+    if risk_level == "High":
+        risk_class = "risk-high"
+        risk_color = "#dc2626"
+    elif risk_level == "Medium":
+        risk_class = "risk-medium"
+        risk_color = "#f59e0b"
+    else:
+        risk_class = "risk-low"
+        risk_color = "#10b981"
+    
+    st.markdown(f"""
+    <div class="risk-card {risk_class}">
+        <div class="risk-label">Risk Level</div>
+        <div class="risk-value" style="color: {risk_color};">{risk_level}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # 該当法律
+    st.markdown('<div class="section-title">Applicable Laws</div>', unsafe_allow_html=True)
+    
+    laws_html = "".join([f'<span class="law-badge">{law}</span>' for law in result["laws"]])
+    st.markdown(f'<div>{laws_html}</div>', unsafe_allow_html=True)
+    
+    # リスクの理由
+    st.markdown('<div class="section-title">Risk Analysis</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="color: #374151; line-height: 1.6;">{result["reason"]}</div>', unsafe_allow_html=True)
+    
+    # 推奨事項
+    st.markdown('<div class="section-title">Recommendations</div>', unsafe_allow_html=True)
+    
+    for i, rec in enumerate(result["recommendations"], 1):
+        st.markdown(f"""
+        <div class="recommendation-item">
+            <strong style="color: #6b7280;">{i}.</strong> {rec}
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # エクスポート
+    st.markdown('<div class="section-title">Export Results</div>', unsafe_allow_html=True)
+    
+    copy_text = f"""AI Legal Advisor - Risk Assessment Report
+
+Risk Level: {risk_level}
+
+Applicable Laws:
+{chr(10).join(['• ' + law for law in result["laws"]])}
+
+Risk Analysis:
+{result["reason"]}
+
+Recommendations:
+{chr(10).join([f'{i}. {rec}' for i, rec in enumerate(result["recommendations"], 1)])}
+
+---
+Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+Disclaimer: This assessment is for reference only. Please consult with legal counsel.
+"""
+    
+    st.text_area(
+        "Copy report:",
+        value=copy_text,
+        height=200,
+        label_visibility="collapsed"
+    )
+    
+    if show_debug:
+        st.markdown('<div class="section-title">Debug Information</div>', unsafe_allow_html=True)
+        st.json({
+            "risk_level": result["risk_level"],
+            "laws": result["laws"],
+            "inference_time": f"{result['inference_time']:.2f}s",
+        })
+
+# session_state初期化
 if 'user_input' not in st.session_state:
     st.session_state['user_input'] = ''
 
 # メインコンテンツ
-st.header("📝 仕様チェック")
+st.markdown('<div class="section-title">Specification Input</div>', unsafe_allow_html=True)
 
-# サンプル入力ボタン
+# サンプルケース
 col1, col2, col3 = st.columns(3)
 
 sample_texts = {
@@ -120,243 +366,87 @@ sample_texts = {
 }
 
 with col1:
-    if st.button("📍 サンプル1: 位置情報", use_container_width=True):
+    if st.button("Example: Location Data", use_container_width=True):
         st.session_state['user_input'] = sample_texts["sample1"]
         st.rerun()
 
 with col2:
-    if st.button("🚫 サンプル2: 解約UI", use_container_width=True):
+    if st.button("Example: Dark Pattern", use_container_width=True):
         st.session_state['user_input'] = sample_texts["sample2"]
         st.rerun()
 
 with col3:
-    if st.button("♿ サンプル3: アクセシビリティ", use_container_width=True):
+    if st.button("Example: Accessibility", use_container_width=True):
         st.session_state['user_input'] = sample_texts["sample3"]
         st.rerun()
 
-# デバッグ用（動作確認後に削除）
-if show_debug:
-    st.write("🔍 デバッグ: session_state['user_input'] =", st.session_state['user_input'])
-
-st.divider()
+st.write("")  # スペース
 
 # 入力フォーム
 user_input = st.text_area(
-    "チェックしたい仕様を入力してください:",
+    "Enter specification to assess:",
     value=st.session_state['user_input'],
-    height=150,
-    placeholder="例: ユーザーの位置情報を収集して、第三者の広告配信事業者に提供します。",
-    key="text_input"
+    height=120,
+    placeholder="Example: We collect user location data and share it with third-party advertising providers.",
+    label_visibility="collapsed"
 )
 
-# user_inputをsession_stateに同期
-st.session_state['user_input'] = user_input
+if user_input != st.session_state['user_input']:
+    st.session_state['user_input'] = user_input
 
-# クリアボタンと判定ボタン
-col_clear, col_check = st.columns([1, 3])
+# アクションボタン
+col_clear, col_space, col_check = st.columns([1, 2, 2])
 
 with col_clear:
-    if st.button("🗑️ クリア", use_container_width=True):
+    if st.button("Clear", use_container_width=True):
         st.session_state['user_input'] = ''
         st.rerun()
 
 with col_check:
-    check_button = st.button("🔍 リスクを判定する", type="primary", use_container_width=True)
+    check_button = st.button("Assess Risk", type="primary", use_container_width=True)
 
 # 判定処理
 if check_button:
     if not user_input or user_input.strip() == "":
-        st.warning("⚠️ 入力が空です。チェックしたい仕様を入力してください。")
+        st.warning("Please enter a specification to assess.")
     else:
         # 入力フィルタリング
-        filter = InputFilter()
-        is_in_scope, message, category = filter.check_scope(user_input)
+        filter_obj = InputFilter()
+        is_in_scope, message, category = filter_obj.check_scope(user_input)
         
         if not is_in_scope:
-            # 対応範囲外
-            st.error(f"❌ 対応範囲外: {category}")
+            st.error(f"Out of Scope: {category}")
             st.markdown(f"""
             <div class="warning-box">
-            <h4>📌 メッセージ</h4>
-            <p>{message}</p>
+                <strong>Notice</strong><br>
+                {message}
             </div>
             """, unsafe_allow_html=True)
             
             if show_debug:
-                st.divider()
-                st.subheader("🐛 デバッグ情報")
                 st.json({
                     "is_in_scope": is_in_scope,
                     "category": category,
                     "message": message
                 })
         else:
-            # 対応範囲内 - モック結果を表示
-            st.success("✅ 対応範囲内の質問です")
-            
-            # 推測カテゴリを表示
-            suggested_category = filter.suggest_category(user_input)
-            if suggested_category:
-                st.info(f"💡 推測カテゴリ: **{suggested_category}**")
-            
-            st.divider()
-            
-            # モックデータ（実際のモデル結果のサンプル）
-            mock_result = generate_mock_result(user_input)
-            
-            # 結果表示
-            display_result(mock_result, show_debug)
-
-# モック結果生成関数
-def generate_mock_result(input_text: str):
-    """
-    モックの判定結果を生成（実際のモデル出力をシミュレート）
-    後でAPI呼び出しに置き換える
-    """
-    # キーワードベースでモックデータを選択
-    if "位置情報" in input_text or "個人情報" in input_text:
-        return {
-            "risk_level": "中",
-            "laws": ["個人情報保護法", "電気通信事業法"],
-            "reason": "位置情報は個人を特定できる情報であり、収集時には目的を限定した開示が義務付けられています。また、広告配信事業者への提供は、提供先が適切な措置を講じているかの確認が必要です。",
-            "recommendations": [
-                "プライバシーポリシーに位置情報の収集目的を明記してください。",
-                "提供先との間で個人情報の第三者提供に関する契約（NDA）を締結してください。",
-                "ユーザーに対してオプトアウト（選択）機会を提供してください。"
-            ],
-            "inference_time": 15.2,
-            "tokens_generated": 239
-        }
-    elif "解約" in input_text or "ダークパターン" in input_text:
-        return {
-            "risk_level": "高",
-            "laws": ["特定商取引法", "消費者契約法"],
-            "reason": "解約を不当に困難にするUI（ダークパターン）が見られ、不当な顧客囲い込みとみなされるリスクがあります。",
-            "recommendations": [
-                "解約ボタンは視認性の高い位置に配置してください。",
-                "解約を選択したユーザーには最大限のサポートを行う設計に修正してください。",
-                "警告メッセージは1回までに制限することを推奨します。"
-            ],
-            "inference_time": 12.8,
-            "tokens_generated": 221
-        }
-    elif "アクセシビリティ" in input_text or "代替テキスト" in input_text or "画像" in input_text:
-        return {
-            "risk_level": "中",
-            "laws": ["障害者差別解消法"],
-            "reason": "スクリーンリーダーで画像の内容が読み上げられないことは、情報伝達における不備として認定される可能性があります。",
-            "recommendations": [
-                "画像ボタンにはテキストバッジを設置してください。",
-                "代替テキスト（alt属性）を必ず記載してください。",
-                "JIS X 8341-3に準拠した実装を行ってください。"
-            ],
-            "inference_time": 14.5,
-            "tokens_generated": 223
-        }
-    else:
-        # デフォルト
-        return {
-            "risk_level": "中",
-            "laws": ["該当法を確認中"],
-            "reason": "入力内容に基づいて法的リスクを分析しています。より詳細な情報があれば、精度が向上します。",
-            "recommendations": [
-                "具体的な仕様を追加してください。",
-                "ユーザーデータの取り扱いについて明記してください。",
-                "法務担当者に確認することを推奨します。"
-            ],
-            "inference_time": 10.0,
-            "tokens_generated": 150
-        }
-
-# 結果表示関数
-def display_result(result: dict, show_debug: bool = False):
-    """判定結果を見やすく表示"""
-    
-    # リスクレベルに応じたスタイル
-    risk_level = result["risk_level"]
-    if "高" in risk_level:
-        risk_class = "risk-high"
-        risk_icon = "🔴"
-    elif "中" in risk_level:
-        risk_class = "risk-medium"
-        risk_icon = "🟡"
-    else:
-        risk_class = "risk-low"
-        risk_icon = "🟢"
-    
-    # リスクレベル表示
-    st.markdown(f"""
-    <div class="{risk_class}">
-    <h3>{risk_icon} リスクレベル: {risk_level}</h3>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.divider()
-    
-    # 該当法律
-    st.subheader("📋 該当する可能性のある法律")
-    for law in result["laws"]:
-        st.markdown(f"- **{law}**")
-    
-    st.divider()
-    
-    # リスクの理由
-    st.subheader("💡 リスクの理由")
-    st.markdown(result["reason"])
-    
-    st.divider()
-    
-    # 推奨される対応策
-    st.subheader("✅ 推奨される対応策")
-    for i, rec in enumerate(result["recommendations"], 1):
-        st.markdown(f"{i}. {rec}")
-    
-    st.divider()
-    
-    # コピー用のテキスト生成
-    copy_text = f"""
-【AI Legal Advisor 判定結果】
-
-■ リスクレベル: {risk_level}
-
-■ 該当する可能性のある法律:
-{chr(10).join(['- ' + law for law in result["laws"]])}
-
-■ リスクの理由:
-{result["reason"]}
-
-■ 推奨される対応策:
-{chr(10).join([f'{i}. {rec}' for i, rec in enumerate(result["recommendations"], 1)])}
-
-※ この判定結果は参考情報です。最終的な法的判断は弁護士にご相談ください。
-判定日時: {datetime.now().strftime("%Y年%m月%d日 %H:%M:%S")}
-"""
-    
-    # コピーボタン
-    st.text_area(
-        "📄 結果をコピー:",
-        value=copy_text,
-        height=200,
-        key="copy_area"
-    )
-    
-    # デバッグ情報
-    if show_debug:
-        st.divider()
-        st.subheader("🐛 デバッグ情報")
-        st.json({
-            "risk_level": result["risk_level"],
-            "laws": result["laws"],
-            "inference_time": f"{result['inference_time']:.2f}秒",
-            "tokens_generated": result["tokens_generated"]
-        })
+            # モック結果表示
+            with st.spinner("Analyzing legal risks..."):
+                import time
+                time.sleep(0.5)  # UX向上のための短い遅延
+                
+                mock_result = generate_mock_result(user_input)
+                
+                st.markdown("---")
+                st.markdown('<div class="section-title">Assessment Results</div>', unsafe_allow_html=True)
+                
+                display_result(mock_result, show_debug)
 
 # フッター
-st.divider()
 st.markdown("""
-<div style='text-align: center; color: #888; font-size: 0.9rem; padding: 2rem 0;'>
-<p><strong>AI Legal Advisor Platform</strong></p>
-<p>Powered by Fine-tuned Elyza-7B | Version 1.0.0 (MVP)</p>
-<p>© 2026 AI Legal Advisor. All rights reserved.</p>
+<div class="footer">
+    <strong>AI Legal Advisor Platform</strong><br>
+    Powered by Fine-tuned Elyza-7B | Version 1.0.0<br>
+    © 2026 AI Legal Advisor. All rights reserved.
 </div>
 """, unsafe_allow_html=True)
