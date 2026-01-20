@@ -1,0 +1,16 @@
+# Frontend dependencies for AI Legal Advisor
+
+# Web Framework
+streamlit>=1.28.0
+
+# HTTP Client (API連携用)
+requests>=2.31.0
+
+# Data Processing
+pandas>=2.1.0
+
+# JSON handling (標準ライブラリで十分だが明示)
+# json (built-in)
+
+# Type hints
+typing-extensions>=4.8.0
