@@ -1,8 +1,20 @@
-# AI Legal Advisor Platform
+# 🛡️ Guardian AI - Legal Compliance Platform
 
 **個人情報・消費者保護特化型 IT法務チェッカー**
 
 Google Gemini API (2.5 Flash) およびファインチューニング済みLLMを活用した、IT法務リスク判定システム。開発仕様書やサービス設計案を入力することで、法的リスク、関連法規、推奨アクションを即座に提示します。
+
+---
+
+## 📸 Demo
+
+### メイン画面 (Top View)
+洗練されたUIで、直感的に仕様を入力できます。
+![Main UI](docs/images/top_view.png)
+
+### 診断結果 (Risk Assessment)
+条文に基づき、リスクレベル(High/Medium/Low)と具体的な推奨アクションを提示します。
+![Result](docs/images/result_high_risk.png)
 
 ---
 
@@ -16,8 +28,11 @@ Google Gemini API (2.5 Flash) およびファインチューニング済みLLM�
 
 * **即時リスク診断**: 仕様テキストを入力するだけで、数秒以内に「High/Medium/Low」のリスク判定を行います。
 * **具体的根拠の提示**: 判定理由とともに、日本の法律（個人情報保護法、資金決済法など）に基づいた法的根拠を提示します。
-* **フィルタリング機能**: AI倫理や技術的な実装詳細など、対応範囲外の入力を事前に検知・除外します。
-* **ミニマルなUI**: チャット形式のシンプルなインターフェースで、法務担当者以外の開発者でも直感的に利用可能です。
+* **洗練されたUI/UX**:
+    * **Quick Demo**: ワンクリックで典型的なリスク事例を呼び出し可能。
+    * **History**: 過去の診断結果をサイドバーに自動保存し、いつでも振り返り可能。
+    * **English/Japanese Support**: グローバルな開発現場を想定した英語UI（一部）。
+* **構造化データ出力**: AIの回答をJSON形式で制御し、安定した出力を保証しています。
 
 ---
 
@@ -41,26 +56,32 @@ Google Gemini API (2.5 Flash) およびファインチューニング済みLLM�
 
 ## システム構成
 
-### アーキテクチャ (Prototype)
+### アーキテクチャ
 
-現在はStreamlitとGemini APIを直接接続する構成で稼働しています。
+現在はStreamlitとGemini APIを直接接続する構成で稼働しています。入力データはAPI経由で処理されますが、コード内の関数を切り替えることでローカルモデルへの換装が可能です。
 
+```mermaid
+graph LR
+    User[User] --> Client[Streamlit Client]
+    Client --> Filter[Input Filter]
+    Filter --> API[Gemini API 2.5 Flash]
 ```
-[User] -> [Streamlit Client (Frontend)] -> [Input Filter] -> [Gemini API (2.5 Flash)]
-```
-
-※ **Local LLM Mode**: 構成を変更することで、ローカル環境（GPUマシン）またはGoogle Colab上で稼働する自作FTモデル（Transformers/Elyza-7B）での推論も可能です。
 
 ### ディレクトリ構成
 
-```
+ソースコード(`src`)とリソース(`assets`)を分離し、保守性を高めた構成です。
+
+```text
 ai-legal-advisor/
-├── app_gemini.py        # メインアプリケーション (Gemini API版)
-├── app_local_llm.py     # メインアプリケーション (ローカルLLM版)
-├── input_filter.py      # 入力フィルタリングモジュール
-├── check_models.py      # 利用可能モデル確認用スクリプト
-├── .env                 # 環境変数設定 (API Key等)
-└── requirements.txt     # 依存パッケージ
+├── assets/                  # 🖼️ アプリケーション画像リソース (ロゴ等)
+├── docs/                    # 📄 ドキュメント・スクリーンショット
+│   └── images/              # (top_view.png, result_high_risk.png等を格納)
+├── src/                     # 📝 ソースコード
+│   ├── app_gemini.py        # メインアプリケーション (API版エントリーポイント)
+│   ├── input_filter.py      # 入力フィルタリングモジュール
+│   └── check_models.py      # 利用可能モデル確認用スクリプト
+├── .env                     # 環境変数設定 (API Key等)
+└── requirements.txt         # 依存パッケージ
 ```
 
 ---
@@ -85,15 +106,16 @@ ai-legal-advisor/
     ```
 
 3.  **環境変数の設定**
-    `.env` ファイルを作成し、APIキーを設定します。
+    ルートディレクトリに `.env` ファイルを作成し、APIキーを設定します。
     ```env
     GOOGLE_API_KEY=your_api_key_here
     # TUNED_MODEL_ID=tunedModels/your-model-id (FTモデル使用時のみ)
     ```
 
 4.  **アプリケーションの起動**
+    `src` フォルダ内のスクリプトを指定して起動します。
     ```bash
-    streamlit run app_gemini.py
+    streamlit run src/app_gemini.py
     ```
 
 ---
@@ -101,15 +123,15 @@ ai-legal-advisor/
 ## 開発ステータス
 
 ### 実装済み
-- [x] Streamlitによるチャット形式UIの実装
-- [x] Gemini 2.5 Flash APIとの連携
-- [x] InputFilterによるスコープ外検知ロジック
-- [x] 長文回答に対応したトークン数調整
-- [x] JSON形式での構造化データ出力
+- [x] Streamlitによるモダンなチャット形式UIの実装
+- [x] Gemini 2.5 Flash APIとの連携とエラーハンドリング(429対策)
+- [x] サイドバーへの履歴保存機能 (Session State管理)
+- [x] JSON形式での構造化データ出力とパース処理
+- [x] フォルダ構成の最適化 (src/assets分離)
 
 ### 今後のロードマップ
-- [ ] ファインチューニング済みモデル(Elyza-7B)のAPI化・統合
-- [ ] 診断履歴のログ保存機能
+- [ ] ファインチューニング済みモデル(Elyza-7B)のローカル推論統合
+- [ ] 診断履歴の永続化 (SQLite/CSV)
 - [ ] レポートのPDF出力機能
 
 ---
@@ -118,7 +140,7 @@ ai-legal-advisor/
 
 * **Frontend**: Streamlit
 * **LLM API**: Google Gemini API (gemini-2.5-flash)
-* **Local LLM (Option)**: Hugging Face Transformers, PyTorch, BitsAndBytes
+* **Design**: Custom CSS styling
 * **Language**: Python 3.10+
 
 ---
