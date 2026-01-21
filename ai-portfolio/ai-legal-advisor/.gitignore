@@ -65,3 +65,9 @@ htmlcov/
 
 # --- Logs ---
 *.log
+
+# モデルデータは重いのでGit管理しない
+models/
+*.safetensors
+*.bin
+*.pt
