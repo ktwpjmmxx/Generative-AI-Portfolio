@@ -1,22 +1,8 @@
-# 🛡️ Guardian AI - Legal Compliance Platform
+# Guardian AI - Legal Compliance Platform
 
 **個人情報・消費者保護特化型 IT法務チェッカー**
 
 Google Gemini API (2.5 Flash) およびファインチューニング済みLLMを活用した、IT法務リスク判定システム。開発仕様書やサービス設計案を入力することで、法的リスク、関連法規、推奨アクションを即座に提示します。
-
----
-
-## 📸 Demo
-
-### メイン画面 (Top View)
-洗練されたUIで、直感的に仕様を入力できます。
-![Main UI](docs/images/top_view.png)
-
-### 診断結果 (Risk Assessment)
-条文に基づき、リスクレベル(High/Medium/Low)と具体的な推奨アクションを提示します。
-![Result](docs/images/result_high_risk.png)
-
----
 
 ## プロジェクト概要
 
@@ -73,15 +59,15 @@ graph LR
 
 ```text
 ai-legal-advisor/
-├── assets/                  # 🖼️ アプリケーション画像リソース (ロゴ等)
-├── docs/                    # 📄 ドキュメント・スクリーンショット
+├── assets/                  # アプリケーション画像リソース (ロゴ等)
+├── docs/                    # ドキュメント・スクリーンショット
 │   └── images/              # (top_view.png, result_high_risk.png等を格納)
-├── src/                     # 📝 ソースコード
+├── src/                     # ソースコード
 │   ├── app_gemini.py        # メインアプリケーション (API版エントリーポイント)
 │   ├── input_filter.py      # 入力フィルタリングモジュール
 │   └── check_models.py      # 利用可能モデル確認用スクリプト
 ├── .env                     # 環境変数設定 (API Key等)
-└── requirements.txt         # 依存パッケージ
+└── notebooks                # Colabでのログ,テスト結果
 ```
 
 ---
